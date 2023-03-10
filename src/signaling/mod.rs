@@ -64,6 +64,23 @@ impl Signaling {
     Ok(())
   }
 
+  pub fn heartbeat(&self, peer_id: PeerId, is_alive: bool) -> Result<()> {
+    // Set the last beat and payload of the peer to now
+    self
+      .peers
+      .read_arc()
+      .get(&peer_id)
+      .with_context(|| format!("peer {peer_id} does not exist"))?
+      .write_arc()
+      .is_alive = is_alive;
+
+    Ok(())
+  }
+
+  pub fn is_alive(&self, peer_id: PeerId) -> bool {
+    self.peers.read_arc().get(&peer_id).map(|peer| peer.read_arc().is_alive).unwrap_or(false)
+  }
+
   pub fn join_room(&self, peer_id: PeerId, room_id: RoomId) -> Result<()> {
     // Add the room to the list of joined rooms for this peer
     self

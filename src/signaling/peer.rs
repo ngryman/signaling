@@ -30,12 +30,13 @@ impl fmt::Display for PeerId {
 pub struct Peer {
   pub id: PeerId,
   pub rooms: HashSet<RoomId>,
+  pub is_alive: bool,
   #[serde(skip)]
   pub sender: PeerSender,
 }
 
 impl Peer {
   pub(super) fn new(id: PeerId, sender: PeerSender) -> Self {
-    Self { id, rooms: Default::default(), sender }
+    Self { id, rooms: Default::default(), sender, is_alive: true }
   }
 }
