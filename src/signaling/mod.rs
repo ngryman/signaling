@@ -90,11 +90,11 @@ impl Signaling {
       .with_context(|| format!("peer {peer_id} does not exist"))?
       .write_arc()
       .rooms
-      .insert(room_id);
+      .insert(room_id.clone());
 
     // Add the peer to the room, creating it on the fly if it doesn't already exist
     if !self.rooms.read_arc().contains_key(&room_id) {
-      let mut room = Room::new(room_id);
+      let mut room = Room::new(room_id.clone());
       room.peers.insert(peer_id);
       self.rooms.write_arc().insert(room_id, Arc::new(RwLock::new(room)));
     } else {

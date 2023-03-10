@@ -2,12 +2,11 @@ use std::collections::HashSet;
 use std::fmt;
 
 use serde::{Deserialize, Serialize};
-use ulid::Ulid;
 
 use super::peer::PeerId;
 
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
-pub struct RoomId(Ulid);
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
+pub struct RoomId(String);
 
 impl fmt::Display for RoomId {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
