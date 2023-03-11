@@ -4,6 +4,7 @@ use axum::response::IntoResponse;
 use clap::Parser;
 use signaling::{Config, Server, Signaling};
 use tracing::Level;
+use tracing_subscriber::fmt::format;
 use tracing_subscriber::EnvFilter;
 
 #[derive(Parser, Debug)]
@@ -18,6 +19,7 @@ struct Args {
 async fn main() -> Result<()> {
   if cfg!(not(debug_assertions)) {
     tracing_subscriber::fmt()
+      .event_format(format().compact().with_target(false).with_source_location(false))
       .with_env_filter(
         EnvFilter::builder()
           .with_default_directive(Level::INFO.into())
@@ -28,6 +30,7 @@ async fn main() -> Result<()> {
       .init();
   } else {
     tracing_subscriber::fmt()
+      .event_format(format().pretty().with_target(false).with_source_location(false).without_time())
       .with_env_filter(
         EnvFilter::builder()
           .with_default_directive(Level::DEBUG.into())
@@ -35,7 +38,6 @@ async fn main() -> Result<()> {
           .add_directive("hyper=off".parse().unwrap())
           .add_directive("tungstenite=off".parse().unwrap()),
       )
-      .without_time()
       .init();
   }
 

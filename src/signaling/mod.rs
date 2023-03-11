@@ -64,7 +64,7 @@ impl Signaling {
     Ok(())
   }
 
-  pub fn heartbeat(&self, peer_id: PeerId, is_alive: bool) -> Result<()> {
+  pub fn set_alive(&self, peer_id: PeerId, is_alive: bool) -> Result<()> {
     // Set the last beat and payload of the peer to now
     self
       .peers
