@@ -37,7 +37,7 @@ impl Server {
       .layer(trace())
       .with_state(state);
 
-    info!("Signaling server: {}", self.port);
+    info!("starting server: {}", self.port);
     let addr = SocketAddr::new([0, 0, 0, 0].into(), self.port);
     axum::Server::bind(&addr)
       .serve(app.into_make_service_with_connect_info::<SocketAddr>())

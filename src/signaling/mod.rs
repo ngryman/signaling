@@ -8,7 +8,7 @@ use std::sync::Arc;
 use anyhow::{Context, Result};
 use axum::extract::ws::Message;
 use parking_lot::RwLock;
-use tracing::error;
+use tracing::{debug, error};
 
 pub use self::config::Config;
 pub(crate) use self::peer::{Peer, PeerId};
@@ -36,13 +36,17 @@ impl Signaling {
   }
 
   pub fn add_peer(&self, sender: PeerSender) -> PeerId {
-    let id = PeerId::new();
-    let peer = Arc::new(RwLock::new(Peer::new(id, sender)));
-    self.peers.write_arc().insert(id, peer);
-    id
+    let peer_id = PeerId::new();
+    debug!("add peer");
+
+    let peer = Arc::new(RwLock::new(Peer::new(peer_id, sender)));
+    self.peers.write_arc().insert(peer_id, peer);
+    peer_id
   }
 
   pub fn remove_peer(&self, peer_id: PeerId) -> Result<()> {
+    debug!("remove peer");
+
     // Remove peer from all rooms it joined
     self
       .peers
@@ -64,7 +68,9 @@ impl Signaling {
     Ok(())
   }
 
-  pub fn set_alive(&self, peer_id: PeerId, is_alive: bool) -> Result<()> {
+  pub fn set_peer_alive(&self, peer_id: PeerId, is_alive: bool) -> Result<()> {
+    debug!("set peer alive is_alive={is_alive}");
+
     // Set the last beat and payload of the peer to now
     self
       .peers
@@ -82,6 +88,8 @@ impl Signaling {
   }
 
   pub fn join_room(&self, peer_id: PeerId, room_id: RoomId) -> Result<()> {
+    debug!("join room room_id={room_id}");
+
     // Add the room to the list of joined rooms for this peer
     self
       .peers
@@ -112,6 +120,8 @@ impl Signaling {
   }
 
   pub fn leave_room(&self, peer_id: PeerId, room_id: RoomId) -> Result<()> {
+    debug!("leave room_id={room_id}");
+
     // Remove the room for the list of joined rooms for this peer
     self
       .peers
@@ -136,6 +146,8 @@ impl Signaling {
   }
 
   pub fn broadcast(&self, peer_id: PeerId, room_id: RoomId, payload: String) -> Result<()> {
+    debug!("broadcast room_id={room_id}, payload={payload}");
+
     self
       .rooms
       .read_arc()
@@ -155,6 +167,8 @@ impl Signaling {
   }
 
   pub fn send(&self, peer_id: PeerId, payload: String) -> Result<()> {
+    debug!("send payload={payload}");
+
     self
       .peers
       .read_arc()

@@ -55,8 +55,8 @@ async fn handle_heartbeats(
   let mut stream = IntervalStream::new(tokio::time::interval(Duration::from_millis(10_000)));
   while stream.next().await.is_some() {
     if signaling.is_alive(peer_id) {
-      debug!("send ping to {peer_id}");
-      signaling.set_alive(peer_id, false)?;
+      debug!("send ping");
+      signaling.set_peer_alive(peer_id, false)?;
       sender.send(Ok(Message::Ping("".into())))?;
     } else {
       break;
@@ -73,7 +73,7 @@ async fn handle_messages(
 ) {
   while let Some(Ok(message)) = ws_receiver.next().await {
     if let Message::Close(_) = message {
-      info!("{peer_id} left");
+      info!("disconnected");
       break;
     }
 
@@ -92,8 +92,8 @@ fn handle_message(message: Message, peer_id: PeerId, signaling: &Signaling) -> R
     Message::Text(payload) => handle_event(payload, peer_id, signaling),
     Message::Binary(_) => bail!("unsupported binary message"),
     Message::Pong(_) => {
-      debug!("recv pong from {peer_id}");
-      signaling.set_alive(peer_id, true)
+      info!("recv pong");
+      signaling.set_peer_alive(peer_id, true)
     }
     _ => unreachable!(),
   }
@@ -101,7 +101,7 @@ fn handle_message(message: Message, peer_id: PeerId, signaling: &Signaling) -> R
 
 fn handle_event(payload: String, peer_id: PeerId, signaling: &Signaling) -> Result<()> {
   let event: Event = payload.parse()?;
-  info!("{event}");
+  info!("recv event event={event}");
 
   match event {
     Event::Subscribe { room_ids } => {
