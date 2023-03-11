@@ -26,7 +26,7 @@ pub(super) enum Event {
 
 impl fmt::Display for Event {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    f.write_str(&serde_json::to_string(self).map_err(|e| fmt::Error)?)
+    f.write_str(&serde_json::to_string(self).map_err(|_| fmt::Error)?)
   }
 }
 
