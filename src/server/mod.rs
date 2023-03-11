@@ -48,10 +48,13 @@ impl Server {
 }
 
 fn cors() -> CorsLayer {
-  // XXX: for testing purposes, we allow every origin
-  // TODO: in production we should only allow `wildbits.app`
-  // .allow_origin(["https://wildbits.app".parse().unwrap()])
-  CorsLayer::new().allow_methods([Method::GET]).allow_origin(Any)
+  if cfg!(not(debug_assertions)) {
+    CorsLayer::new()
+      .allow_methods([Method::GET])
+      .allow_origin(["https://wildbits.app".parse().unwrap()])
+  } else {
+    CorsLayer::new().allow_methods([Method::GET]).allow_origin(Any)
+  }
 }
 
 fn trace() -> TraceLayer<SharedClassifier<ServerErrorsAsFailures>> {
