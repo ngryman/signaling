@@ -14,17 +14,13 @@ pub(crate) use self::room::{Room, RoomId};
 
 use self::peer::PeerSender;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Signaling {
   peers: Arc<RwLock<HashMap<PeerId, Arc<RwLock<Peer>>>>>,
   rooms: Arc<RwLock<HashMap<RoomId, Arc<RwLock<Room>>>>>,
 }
 
 impl Signaling {
-  pub fn new() -> Self {
-    Self { peers: Default::default(), rooms: Default::default() }
-  }
-
   pub fn peers(&self) -> Vec<Arc<RwLock<Peer>>> {
     self.peers.read_arc().values().cloned().collect()
   }

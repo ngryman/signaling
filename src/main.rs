@@ -42,7 +42,7 @@ async fn main() -> Result<()> {
   }
 
   let args = Args::parse();
-  let signaling = Signaling::new();
+  let signaling = Signaling::default();
   let server = Server::new(args.port, signaling);
   server.listen().await
 }
