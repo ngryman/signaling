@@ -1,4 +1,3 @@
-mod config;
 mod peer;
 mod room;
 
@@ -10,7 +9,6 @@ use axum::extract::ws::Message;
 use parking_lot::RwLock;
 use tracing::{debug, error};
 
-pub use self::config::Config;
 pub(crate) use self::peer::{Peer, PeerId};
 pub(crate) use self::room::{Room, RoomId};
 
@@ -23,7 +21,7 @@ pub struct Signaling {
 }
 
 impl Signaling {
-  pub fn new(_config: Config) -> Self {
+  pub fn new() -> Self {
     Self { peers: Default::default(), rooms: Default::default() }
   }
 

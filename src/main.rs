@@ -2,7 +2,7 @@ use anyhow::Result;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use clap::Parser;
-use signaling::{Config, Server, Signaling};
+use signaling::{Server, Signaling};
 use tracing::Level;
 use tracing_subscriber::fmt::format;
 use tracing_subscriber::EnvFilter;
@@ -42,7 +42,7 @@ async fn main() -> Result<()> {
   }
 
   let args = Args::parse();
-  let signaling = Signaling::new(Config::default());
+  let signaling = Signaling::new();
   let server = Server::new(args.port, signaling);
   server.listen().await
 }
