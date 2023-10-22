@@ -35,7 +35,11 @@ async fn handle_socket(socket: WebSocket, state: ServerState, addr: SocketAddr) 
   tokio::select! {
     _ = handle_channel(receiver, ws_sender) => {},
     _ = handle_heartbeats(peer_id, sender, state.signaling.clone()) => {},
-    _ = handle_messages(peer_id, ws_receiver, state.signaling) => {},
+    _ = handle_messages(peer_id, ws_receiver, state.signaling.clone()) => {},
+  }
+
+  if let Err(e) = state.signaling.remove_peer(peer_id) {
+    error!("{e}");
   }
 }
 
@@ -59,6 +63,7 @@ async fn handle_heartbeats(
       signaling.set_peer_alive(peer_id, false)?;
       sender.send(Ok(Message::Ping("".into())))?;
     } else {
+      info!("connection timeout");
       break;
     }
   }
@@ -81,10 +86,6 @@ async fn handle_messages(
       error!("{e}")
     }
   }
-
-  if let Err(e) = signaling.remove_peer(peer_id) {
-    error!("{e}");
-  }
 }
 
 fn handle_message(message: Message, peer_id: PeerId, signaling: &Signaling) -> Result<()> {
@@ -92,7 +93,7 @@ fn handle_message(message: Message, peer_id: PeerId, signaling: &Signaling) -> R
     Message::Text(payload) => handle_event(payload, peer_id, signaling),
     Message::Binary(_) => bail!("unsupported binary message"),
     Message::Pong(_) => {
-      info!("recv pong");
+      debug!("recv pong");
       signaling.set_peer_alive(peer_id, true)
     }
     _ => unreachable!(),
