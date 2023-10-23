@@ -1,3 +1,4 @@
+mod event;
 mod peer;
 mod room;
 
@@ -9,6 +10,7 @@ use axum::extract::ws::Message;
 use parking_lot::RwLock;
 use tracing::{debug, error};
 
+pub(crate) use self::event::Event;
 pub(crate) use self::peer::{Peer, PeerId};
 pub(crate) use self::room::{Room, RoomId};
 

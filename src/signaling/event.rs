@@ -7,7 +7,7 @@ use crate::signaling::RoomId;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub(super) enum Event {
+pub enum Event {
   Subscribe {
     #[serde(rename = "topics")]
     room_ids: Vec<RoomId>,

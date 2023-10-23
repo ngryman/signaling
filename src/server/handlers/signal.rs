@@ -12,9 +12,8 @@ use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
 use tokio_stream::wrappers::{IntervalStream, UnboundedReceiverStream};
 use tracing::{debug, error, info, instrument};
 
-use crate::server::event::Event;
 use crate::server::state::ServerState;
-use crate::signaling::PeerId;
+use crate::signaling::{Event, PeerId};
 use crate::Signaling;
 
 pub(crate) async fn signal(
