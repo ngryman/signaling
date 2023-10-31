@@ -5,7 +5,8 @@ COPY . .
 # Build and cache the binary and dependent crates in release mode
 RUN --mount=type=cache,target=/usr/local/cargo,from=rust:latest,source=/usr/local/cargo \
     --mount=type=cache,target=target \
-    cargo build --release && mv ./target/release/signaling ./signaling
+    cargo build --release && \
+    mv ./target/release/signaling ./signaling
 
 # Runtime image
 FROM debian:bookworm-slim
@@ -20,7 +21,7 @@ USER app
 WORKDIR /app
 
 # Get compiled binaries from builder's cargo install directory
-COPY --from=builder /usr/src/app/signaling /app/signaling
+COPY --from=builder /usr/src/app/signaling ./signaling
 
 # Run the app
 CMD ./signaling
