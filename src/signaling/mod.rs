@@ -4,10 +4,13 @@ mod room;
 
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::time::Duration;
 
 use anyhow::{Context, Result};
 use axum::extract::ws::Message;
+use futures_util::StreamExt;
 use parking_lot::RwLock;
+use tokio_stream::wrappers::IntervalStream;
 use tracing::{debug, error};
 
 pub(crate) use self::event::Event;
@@ -174,5 +177,22 @@ impl Signaling {
       .sender
       .send(Ok(Message::Text(payload)))
       .map_err(Into::into)
+  }
+
+  pub async fn run(self) -> Result<()> {
+    let mut stream = IntervalStream::new(tokio::time::interval(Duration::from_secs(10)));
+
+    while stream.next().await.is_some() {
+      self.garbage_collect();
+    }
+
+    Ok(())
+  }
+
+  fn garbage_collect(&self) {
+    debug!("garbage collect");
+
+    // Remove all rooms that are empty
+    self.rooms.write_arc().retain(|_, room| !room.read_arc().peers.is_empty());
   }
 }

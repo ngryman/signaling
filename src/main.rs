@@ -1,6 +1,4 @@
 use anyhow::Result;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
 use clap::Parser;
 use signaling::{Server, Signaling};
 use tracing::Level;
@@ -43,10 +41,12 @@ async fn main() -> Result<()> {
 
   let args = Args::parse();
   let signaling = Signaling::default();
-  let server = Server::new(args.port, signaling);
-  server.listen().await
-}
+  let server = Server::new(args.port, signaling.clone());
 
-pub async fn generate_handler() -> impl IntoResponse {
-  StatusCode::OK
+  tokio::select! {
+    _ = signaling.run() => {},
+    _ = server.run() => {},
+  }
+
+  Ok(())
 }

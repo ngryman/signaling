@@ -55,7 +55,8 @@ async fn handle_heartbeats(
   sender: UnboundedSender<Result<Message, Error>>,
   signaling: Signaling,
 ) -> Result<()> {
-  let mut stream = IntervalStream::new(tokio::time::interval(Duration::from_millis(10_000)));
+  let mut stream = IntervalStream::new(tokio::time::interval(Duration::from_secs(10)));
+
   while stream.next().await.is_some() {
     if signaling.is_alive(peer_id) {
       debug!("send ping");
@@ -66,6 +67,7 @@ async fn handle_heartbeats(
       break;
     }
   }
+
   Ok(())
 }
 

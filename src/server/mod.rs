@@ -27,7 +27,7 @@ impl Server {
     Self { port, signaling }
   }
 
-  pub async fn listen(self) -> Result<()> {
+  pub async fn run(self) -> Result<()> {
     let state = ServerState::new(self.signaling);
     let app = Router::new()
       .route("/", get(handlers::signal))
